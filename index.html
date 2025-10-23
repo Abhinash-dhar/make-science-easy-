@@ -1,0 +1,1889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neab Learning: Class 12 PCMB Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Apply Inter font family */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        /* Font for Calculator Display/Buttons */
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fc; /* Light background for the whole page */
+        }
+        .hikmah-primary {
+            color: #067c4d; 
+        }
+        .hikmah-bg-primary {
+            background-color: #067c4d; 
+        }
+        .hikmah-hover:hover {
+            background-color: #056a42;
+        }
+        
+        .content-area {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+            min-height: 70vh;
+            transition: opacity 0.3s ease-in-out; 
+        }
+
+        .tab-button {
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.75rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .tab-active {
+            background-color: #067c4d;
+            color: white;
+            box-shadow: 0 4px 12px rgba(6, 124, 77, 0.3);
+        }
+        .tab-inactive {
+            background-color: #e5e7eb; /* Gray-100 */
+            color: #4b5563; /* Gray-600 */
+        }
+        .chapter-card {
+            transition: transform 0.2s, background-color 0.2s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        .chapter-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            background-color: #f3f4f6;
+        }
+        
+        #filter-tabs {
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        #filter-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .lesson-intro-animate {
+            animation: lessonZoomBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        @keyframes lessonZoomBounce {
+            0% { 
+                opacity: 0; 
+                transform: scale(0.95) translateY(20px);
+            }
+            70% { 
+                opacity: 1; 
+                transform: scale(1.01) translateY(0);
+            }
+            100% { 
+                opacity: 1; 
+                transform: scale(1) translateY(0);
+            }
+        }
+
+
+        .fade-in-content {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* New Styles for Aesthetic Welcome Animation */
+        .welcome-card-animate {
+            opacity: 0; /* Start hidden */
+            animation: welcome-fade-in 0.8s ease-out forwards;
+        }
+        
+        .welcome-text-animate {
+            opacity: 0; /* Start hidden */
+            animation: welcome-text-slide 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes welcome-fade-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes welcome-text-slide {
+            0% { opacity: 0; transform: translateY(10px); }
+            40% { opacity: 0; } 
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Mandatory Tailwind classes for dynamic color generation */
+        .border-blue-400, .bg-blue-50, .text-blue-600, .bg-blue-500, .text-blue-800 {}
+        .border-orange-400, .bg-orange-50, .text-orange-600, .bg-orange-500, .text-orange-800 {}
+        .border-green-400, .bg-green-50, .text-green-600, .bg-green-500, .text-green-800 {}
+        .text-red-600, .text-red-500, .bg-red-50, .border-red-200, .text-gray-600 {}
+        .border-purple-400, .bg-purple-50, .text-purple-600, .bg-purple-500, .text-purple-800, .bg-purple-600 {}
+
+        /* --- Custom Styles for Periodic Table Colors --- */
+        .color-nonmetal { background-color: #4ade80; color: #166534; } /* Green */
+        .color-alkali-metal { background-color: #fca5a5; color: #991b1b; } /* Light Red */
+        .color-alkaline-earth-metal { background-color: #fcd34d; color: #92400e; } /* Yellow */
+        .color-metalloid { background-color: #a78bfa; color: #5b21b6; } /* Purple */
+        .color-post-transition-metal { background-color: #60a5fa; color: #1e40af; } /* Blue */
+        .color-transition-metal { background-color: #f97316; color: #9a3412; } /* Orange */
+        .color-lanthanide { background-color: #facc15; color: #a16207; } /* Gold */
+        .color-actinide { background-color: #c084fc; color: #7e22ce; } /* Violet */
+        .color-noble-gas { background-color: #38bdf8; color: #075985; } /* Cyan */
+        .color-halogen { background-color: #f472b6; color: #9d174d; } /* Pink */
+        .color-unknown { background-color: #e5e7eb; color: #4b5563; } /* Gray */
+
+        /* Calculator specific styles */
+        .calc-display {
+            font-family: 'Fira Code', monospace;
+            text-align: right;
+        }
+        .calc-button {
+            font-family: 'Fira Code', monospace;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        .calc-button:active {
+            transform: scale(0.95);
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <header class="bg-white shadow-lg sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="text-2xl font-extrabold flex items-center cursor-pointer" onclick="renderPage('dashboard')">
+                <span class="text-gray-800 mr-1">Neab</span><span class="hikmah-primary">Learning</span>
+            </div>
+
+            <nav class="flex space-x-4 text-gray-600 font-medium overflow-x-auto md:space-x-6 md:overflow-x-visible pb-1">
+                <a href="#" onclick="renderPage('subject', 'Physics')" class="hover:hikmah-primary transition whitespace-nowrap">Physics</a>
+                <a href="#" onclick="renderPage('subject', 'Chemistry')" class="hover:hikmah-primary transition whitespace-nowrap">Chemistry</a>
+                <a href="#" onclick="renderPage('subject', 'Math')" class="hover:hikmah-primary transition whitespace-nowrap">Mathematics</a>
+                <a href="#" onclick="renderPage('subject', 'Biology')" class="hover:hikmah-primary transition whitespace-nowrap">Biology</a>
+                <a href="#" onclick="renderPage('tools')" class="hover:hikmah-primary transition font-bold text-blue-600 whitespace-nowrap">Tools</a>
+            </nav>
+
+            <div class="flex items-center space-x-4">
+                <button class="bg-gray-100 p-2 rounded-full hover:bg-gray-200 transition relative"
+                    onclick="renderPage('notifications')">
+                    <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i>
+                    <span id="unread-indicator" class="absolute top-1 right-1 block h-2 w-2 rounded-full bg-red-500 transition-opacity" style="opacity: 0;"></span>
+                </button>
+                <button class="hikmah-bg-primary text-white px-4 py-2 rounded-lg font-semibold shadow-md hover:hikmah-hover transition hidden sm:block"
+                    onclick="renderPage('profile')">
+                    Profile
+                </button>
+                </div>
+        </div>
+    </header>
+
+    <main id="app-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 mb-16">
+        <div class="content-area p-10 text-center">
+            <i data-lucide="loader" class="w-10 h-10 animate-spin text-gray-400 mx-auto"></i>
+            <p class="text-gray-600 mt-3">Initializing platform...</p>
+        </div>
+    </main>
+
+    <footer class="text-center py-6 text-gray-500 text-sm">
+        &copy; 2025 Neab Learning Platform. All rights reserved. Built by Abhinash.
+    </footer>
+
+    <div id="element-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4" onclick="closeElementProperties()">
+        <div id="element-modal-content" class="bg-white rounded-xl p-6 shadow-2xl max-w-lg w-full transform transition-all duration-300 scale-95 opacity-0" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-start border-b pb-3 mb-4">
+                <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+                    <i data-lucide="info" class="w-6 h-6 mr-2 text-blue-600"></i>
+                    Element Properties
+                </h3>
+                <button onclick="closeElementProperties()" class="text-gray-500 hover:text-red-500 transition">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div id="element-details" class="space-y-3">
+                </div>
+        </div>
+    </div>
+
+
+    <script type="module">
+        // -------------------------------------------------------------------
+        // FIX: SIMPLIFIED INITIALIZATION FOR LOCAL/STANDALONE USE
+        // -------------------------------------------------------------------
+        // The original code used Firebase imports which often fail when running 
+        // the file locally due to CORS/module restrictions.
+        // We remove those imports and enforce the local mock mode for progress
+        // tracking, ensuring the dashboard loads with color immediately.
+
+        // MOCK/LOCAL PROGRESS STORE
+        let userProgress = {};
+        const userId = 'mock-user-local'; 
+
+        window.__currentSubject = null;
+        window.__currentChapterId = null;
+        window.__currentPage = null; 
+        window.__currentTool = 'calculator';
+
+        // MOCK FUNCTIONS FOR PROGRESS
+        async function saveProgress(chapterId, isComplete) {
+            const now = new Date().toISOString();
+            console.warn("Saving progress in mock mode.");
+            userProgress[chapterId] = { completed: isComplete, timestamp: now };
+            if (window.__currentSubject && window.__currentChapterId === chapterId) {
+                renderPage('lesson', window.__currentSubject, window.__currentChapterId, { skipAnimation: true });
+            }
+            if (window.__currentPage === 'profile' || window.__currentPage === 'notifications') {
+                renderPage(window.__currentPage, null, null, { skipAnimation: true });
+            }
+            updateUnreadIndicator();
+        }
+        
+        window.toggleChapterComplete = function(subject, chapterId, isComplete) {
+             saveProgress(chapterId, isComplete);
+        }
+
+        // MOCK FUNCTION FOR LOADING
+        function initializeAppLogic() {
+            // This now just simulates the successful load and renders the dashboard
+            console.log("App initialized in mock mode. Rendering dashboard.");
+            renderPage('dashboard');
+        }
+        // -------------------------------------------------------------------
+
+
+        // --- NCERT Chapter Data and Course Data (Unchanged) ---
+        const courseData = [
+            { id: 1, title: "Electromagnetism: Advanced Concepts", image: "https://placehold.co/400x250/007AFF/ffffff?text=Physics", description: "Detailed lectures on Electrostatics, EMI, and AC Circuits. Essential for JEE/NEET.", subject: "Physics", duration: null, capacity: "Unlimited" }, 
+            { id: 2, title: "Organic Chemistry: Named Reactions", image: "https://placehold.co/400x250/F59E0B/ffffff?text=Chemistry", description: "In-depth mechanism and practice for all key named reactions (e.g., Aldol, Cannizaro).", subject: "Chemistry", duration: null, capacity: "50 Seats" }, 
+            { id: 3, title: "Advanced Calculus: Integration & Vectors", image: "https://placehold.co/400x250/10B981/ffffff?text=Math", description: "Master Definite Integrals, Differential Equations, and 3D Vector Algebra.", subject: "Math", duration: null, capacity: "Unlimited" }, 
+            { id: 4, title: "Modern Biology: Genetics & Ecology", image: "https://placehold.co/400x250/9333ea/ffffff?text=Biology", description: "Master Mendel's principles, Molecular Biology, and key ecological interactions. Essential for NEET.", subject: "Biology", duration: null, capacity: "Unlimited" },
+        ];
+        
+        const ncertChapters = {
+            'Physics': [
+                { id: 'P1', chapter: 1, title: "Electric Charges and Fields" },
+                { id: 'P2', chapter: 2, title: "Electrostatic Potential and Capacitance" },
+                { id: 'P3', chapter: 3, title: "Current Electricity" },
+                { id: 'P4', chapter: 4, title: "Moving Charges and Magnetism" },
+                { id: 'P5', chapter: 5, title: "Magnetism and Matter" },
+                { id: 'P6', chapter: 6, title: "Electromagnetic Induction" },
+                { id: 'P7', chapter: 7, title: "Alternating Current" },
+                { id: 'P8', chapter: 8, title: "Electromagnetic Waves" },
+                { id: 'P9', chapter: 9, title: "Ray Optics and Optical Instruments" },
+                { id: 'P10', chapter: 10, title: "Wave Optics" },
+                { id: 'P11', chapter: 11, title: "Dual Nature of Radiation and Matter" },
+                { id: 'P12', chapter: 12, title: "Atoms" },
+                { id: 'P13', chapter: 13, title: "Nuclei" },
+                { id: 'P14', chapter: 14, title: "Semiconductor Electronics: Materials, Devices and Simple Circuits" },
+            ],
+            'Chemistry': [
+                { id: 'C1', chapter: 1, title: "Solutions" },
+                { id: 'C2', chapter: 2, title: "Electrochemistry" },
+                { id: 'C3', chapter: 3, title: "Chemical Kinetics" },
+                { id: 'C4', chapter: 4, title: "d and f-Block Elements" },
+                { id: 'C5', chapter: 5, title: "Coordination Compounds" },
+                { id: 'C6', chapter: 6, title: "Haloalkanes and Haloarenes" },
+                { id: 'C7', chapter: 7, title: "Alcohols, Phenols and Ethers" },
+                { id: 'C8', chapter: 8, title: "Aldehydes, Ketones and Carboxylic Acids" },
+                { id: 'C9', chapter: 9, title: "Amines" },
+                { id: 'C10', chapter: 10, "title": "Biomolecules" },
+            ],
+            'Math': [
+                { id: 'M1', chapter: 1, title: "Relations and Functions" },
+                { id: 'M2', chapter: 2, title: "Inverse Trigonometric Functions" },
+                { id: 'M3', chapter: 3, title: "Matrices" },
+                { id: 'M4', chapter: 4, "title": "Determinants" },
+                { id: 'M5', chapter: 5, "title": "Continuity and Differentiability" },
+                { id: 'M6', chapter: 6, "title": "Applications of Derivatives" },
+                { id: 'M7', chapter: 7, "title": "Integrals" },
+                { id: 'M8', chapter: 8, "title": "Applications of Integrals" },
+                { id: 'M9', chapter: 9, "title": "Differential Equations" },
+                { id: 'M10', chapter: 10, "title": "Vector Algebra" },
+                { id: 'M11', chapter: 11, "title": "Three Dimensional Geometry" },
+                { id: 'M12', chapter: 12, "title": "Linear Programming" },
+                { id: 'M13', chapter: 13, "title": "Probability" },
+            ],
+            'Biology': [
+                { id: 'B1', chapter: 1, title: "Reproduction in Organisms" },
+                { id: 'B2', chapter: 2, title: "Sexual Reproduction in Flowering Plants" },
+                { id: 'B3', chapter: 3, title: "Human Reproduction" },
+                { id: 'B4', chapter: 4, title: "Reproductive Health" },
+                { id: 'B5', chapter: 5, title: "Principles of Inheritance and Variation" },
+                { id: 'B6', chapter: 6, title: "Molecular Basis of Inheritance" },
+                { id: 'B7', chapter: 7, title: "Evolution" },
+                { id: 'B8', chapter: 8, title: "Human Health and Disease" },
+                { id: 'B9', chapter: 9, title: "Strategies for Enhancement in Food Production" },
+                { id: 'B10', chapter: 10, title: "Microbes in Human Welfare" },
+                { id: 'B11', chapter: 11, title: "Biotechnology: Principles and Processes" },
+                { id: 'B12', chapter: 12, title: "Biotechnology and its Applications" },
+                { id: 'B13', chapter: 13, title: "Organisms and Populations" },
+                { id: 'B14', chapter: 14, "title": "Ecosystem" },
+                { id: 'B15', chapter: 15, "title": "Biodiversity and Conservation" },
+                { id: 'B16', chapter: 16, "title": "Environmental Issues" },
+            ],
+        };
+        
+        const chapterFormulas = {
+            'P1': [
+                { name: "Coulomb's Law", formula: `$$F = k \\frac{|q_1 q_2|}{r^2}$$` },
+                { name: "Electric Field", formula: `$$\\vec{E} = \\frac{\\vec{F}}{q_0}$$` },
+                { name: "Electric Field from Point Charge", formula: `$$E = k \\frac{|q|}{r^2}$$` },
+            ],
+            'P2': [
+                { name: "Electric Potential", formula: `$$V = \\frac{W}{q_0}$$` },
+                { name: "Capacitance (General)", formula: `$$C = \\frac{Q}{V}$$` },
+                { name: "Capacitance (Parallel Plate)", formula: `$$C = \\frac{\\epsilon_0 A}{d}$$` },
+            ],
+            'C1': [
+                { name: "Raoult's Law (Volatile Components)", formula: `$$P_{\\text{total}} = P_A^0 x_A + P_B^0 x_B$$` },
+                { name: "Molality", formula: `$$m = \\frac{\\text{moles of solute}}{\\text{mass of solvent (kg)}}$$` },
+                { name: "Freezing Point Depression", formula: `$$\\Delta T_f = i K_f m$$` },
+            ],
+            'C2': [
+                 { name: "Nernst Equation", formula: `$$E_{\\text{cell}} = E_{\\text{cell}}^0 - \\frac{0.0591}{n} \\log Q$$` },
+                 { name: "Gibbs Free Energy", formula: `$$\\Delta G^0 = -n F E_{\\text{cell}}^0$$` },
+                 { name: "Kohlrausch's Law", formula: `$$\\Lambda_m^0 = x \\lambda_A + y \\lambda_B$$` },
+            ],
+            'M1': [
+                { name: "Identity Function", formula: `$$f(x) = x$$` },
+                { name: "Composite Function", formula: `$$g \\circ f(x) = g(f(x))$$` },
+                { name: "Range of Function $f$", formula: `$$\\text{Range}(f) = \\{ f(x) : x \\in \\text{Domain}(f) \\}$$` },
+            ],
+             'M2': [
+                { name: "Principal Value Branch", formula: `$$\\sin^{-1} x \\in \\left[ -\\frac{\\pi}{2}, \\frac{\\pi}{2} \\right]$$` },
+                { name: "Inverse Tangent Identity", formula: `$$\\tan^{-1} x + \\cot^{-1} x = \\frac{\\pi}{2}$$` },
+                { name: "Conversion Formula", formula: `$$\\cos^{-1} x = \\sin^{-1} \\sqrt{1-x^2}$$` },
+            ],
+            'B5': [ 
+                { name: "Mendel's First Law (Monohybrid)", formula: `$$T \\times t \\rightarrow \\text{all } Tt \\text{ in } F_1$$` },
+                { name: "Dihybrid Phenotypic Ratio", formula: `$$9:3:3:1 \\text{ (In } F_2 \\text{ generation)}$$` },
+                { name: "Test Cross Ratio", formula: `$$1:1:1:1 \\text{ (Dihybrid)}$$` },
+            ],
+            'B6': [ 
+                { name: "Chargaff's Rule", formula: `$$\\frac{[A] + [G]}{[T] + [C]} = 1$$` },
+                { name: "Central Dogma (Simplified)", formula: `$$\\text{DNA} \\xrightarrow{\\text{Transcription}} \\text{RNA} \\xrightarrow{\\text{Translation}} \\text{Protein}$$` },
+            ],
+        };
+
+        function calculateTotalChapters() {
+            let total = 0;
+            for (const subject in ncertChapters) {
+                total += ncertChapters[subject].length;
+            }
+            return total;
+        }
+
+        function calculateCompletedChapters() {
+            let completedCount = 0;
+            for (const chapterId in userProgress) {
+                if (userProgress[chapterId]?.completed === true) {
+                    completedCount++;
+                }
+            }
+            return completedCount;
+        }
+        // --- END: NCERT Chapter Data and Course Data ---
+
+
+        // --- NOTIFICATION LOGIC (Modified to use localProgress) ---
+        
+        const staticNotifications = [
+            { id: 'S1', type: 'System', title: 'Platform Update', message: 'Academic Year **2025-26** NCERT Syllabus is now fully loaded.', date: '2025-10-21T10:00:00.000Z', read: false, action: "renderPage('dashboard')" },
+            { id: 'S2', type: 'System', title: 'Welcome!', message: 'Explore the Notes and Key Formulas tab for Chapter P1: Electric Charges and Fields.', date: '2025-10-21T09:00:00.000Z', read: true, action: "renderPage('lesson', 'Physics', 'P1')" },
+        ];
+        
+        function generateRealTimeNotifications() {
+            let notifications = [...staticNotifications];
+            for (const chapterId in userProgress) {
+                const progress = userProgress[chapterId];
+                
+                let chapter = null;
+                let subject = '';
+                for (const sub in ncertChapters) {
+                    const found = ncertChapters[sub].find(c => c.id === chapterId);
+                    if (found) {
+                        chapter = found;
+                        subject = sub;
+                        break;
+                    }
+                }
+                
+                if (!chapter || !progress.timestamp) continue;
+                
+                if (progress.completed) {
+                    notifications.push({
+                        id: `P-${chapterId}`,
+                        type: 'Progress',
+                        title: `Chapter ${chapter.chapter} Completed!`,
+                        message: `You successfully completed the notes for **${subject}: ${chapter.title}**. Keep up the great work!`,
+                        date: progress.timestamp,
+                        read: false,
+                        action: `renderPage('lesson', '${subject}', '${chapterId}')`
+                    });
+                } 
+            }
+
+            notifications.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            const newestProgressDate = notifications.filter(n => n.type === 'Progress').reduce((maxDate, n) => {
+                 const current = new Date(n.date);
+                 return current > maxDate ? current : maxDate;
+            }, new Date(0));
+
+            return notifications.map(n => {
+                 if (n.type !== 'Progress' && new Date(n.date) < newestProgressDate) {
+                     return { ...n, read: true };
+                 }
+                 return n;
+            });
+        }
+        
+        function updateUnreadIndicator() {
+            const indicator = document.getElementById('unread-indicator');
+            if (!indicator) return;
+            
+            const notifications = generateRealTimeNotifications();
+            const unreadCount = notifications.filter(n => !n.read).length;
+            
+            indicator.style.opacity = unreadCount > 0 ? '1' : '0';
+        }
+        // --- END: NOTIFICATION LOGIC ---
+
+
+        // --- PAGE RENDERING LOGIC (Updated to include 'tools') ---
+
+        window.renderPage = function(pageName, identifier1 = null, identifier2 = null, options = {}) {
+            const appContent = document.getElementById('app-content');
+            const { skipAnimation = false } = options;
+
+            appContent.classList.remove('lesson-intro-animate');
+            appContent.style.opacity = '0'; 
+
+            window.__currentSubject = identifier1;
+            window.__currentChapterId = identifier2;
+            window.__currentPage = pageName; 
+
+            setTimeout(() => {
+                let pageHtml = '';
+                if (pageName === 'dashboard') {
+                    pageHtml = renderDashboardPage();
+                } else if (pageName === 'subject') {
+                    pageHtml = renderSubjectPage(identifier1); 
+                } else if (pageName === 'lesson') {
+                    const chapter = ncertChapters[identifier1] ? ncertChapters[identifier1].find(c => c.id === identifier2) : null;
+                    if (chapter) {
+                         pageHtml = renderLessonPage(identifier1, identifier2);
+                    } else {
+                         pageHtml = renderErrorPage('Chapter Not Found', 'The chapter reference is invalid. Please go back to the subject list.');
+                    }
+                } else if (pageName === 'profile') { 
+                    pageHtml = renderProfilePage();
+                } else if (pageName === 'notifications') { 
+                    pageHtml = renderNotificationPage();
+                } else if (pageName === 'tools') { 
+                    pageHtml = renderToolsPage();
+                } else {
+                    pageHtml = renderErrorPage('Page Not Found', `The page "${pageName}" could not be loaded.`);
+                }
+
+
+                appContent.innerHTML = pageHtml;
+                lucide.createIcons();
+                
+                if (pageName === 'lesson' && !skipAnimation) {
+                    appContent.classList.add('lesson-intro-animate');
+                } else {
+                    appContent.style.opacity = '1';
+                }
+
+                if (pageName === 'lesson') {
+                    setTimeout(() => {
+                        updateLessonContent('Notes', identifier1, identifier2);
+                    }, 50); 
+                }
+                
+                if (pageName === 'notifications') {
+                    updateUnreadIndicator();
+                }
+                
+                if (pageName === 'tools') {
+                    updateToolContent(window.__currentTool); 
+                }
+
+                console.log(`Rendering page: ${pageName}, Subject: ${identifier1}, Chapter ID: ${identifier2}`);
+            }, 100);
+        }
+
+        // --- NEW FUNCTION: Renders the Tools Page ---
+        window.renderToolsPage = function() {
+            // Note: The __currentTool state is set/updated by updateToolContent
+            
+            return `
+                <div class="content-area p-6 lg:p-10">
+                    <h1 class="text-3xl lg:text-4xl font-extrabold text-gray-900 mb-8 border-b pb-4 flex items-center">
+                        <i data-lucide="wrench" class="w-8 h-8 mr-3 text-blue-600"></i> Essential Academic Tools
+                    </h1>
+
+                    <div class="flex space-x-4 overflow-x-auto border-b pb-1 mb-6">
+                        <button id="tool-calculator" onclick="updateToolContent('calculator')" class="text-gray-500 hover:text-blue-700 font-medium py-2 transition whitespace-nowrap">
+                            <i data-lucide="calculator" class="w-4 h-4 mr-1 inline-block"></i> Scientific Calculator
+                        </button>
+                        <button id="tool-periodic-table" onclick="updateToolContent('periodic-table')" class="text-gray-500 hover:text-blue-700 font-medium py-2 transition whitespace-nowrap">
+                            <i data-lucide="atom" class="w-4 h-4 mr-1 inline-block"></i> Periodic Table
+                        </button>
+                        <button id="tool-unit-converter" onclick="updateToolContent('unit-converter')" class="text-gray-500 hover:text-blue-700 font-medium py-2 transition whitespace-nowrap">
+                            <i data-lucide="scale" class="w-4 h-4 mr-1 inline-block"></i> Unit Converter
+                        </button>
+                    </div>
+
+                    <div id="tool-content-display" class="min-h-[600px] border border-gray-200 rounded-xl p-4 lg:p-8 bg-gray-50 shadow-inner">
+                        </div>
+                </div>
+            `;
+        }
+
+        // --- NEW FUNCTION: Updates the content area within the Tools Page ---
+        window.updateToolContent = function(toolName) {
+            const contentDiv = document.getElementById('tool-content-display');
+            if (!contentDiv) return;
+
+            // Update global state
+            window.__currentTool = toolName;
+
+            // Update button states
+            const tools = ['calculator', 'periodic-table', 'unit-converter'];
+            tools.forEach(tool => {
+                const btn = document.getElementById(`tool-${tool}`);
+                if (btn) {
+                    btn.className = (tool === toolName) 
+                        ? 'text-blue-600 border-b-2 border-blue-600 font-semibold py-2 transition whitespace-nowrap'
+                        : 'text-gray-500 hover:text-gray-700 font-medium py-2 transition whitespace-nowrap';
+                }
+            });
+
+            // Added Fade-in animation when switching tabs
+            contentDiv.classList.remove('fade-in-content');
+            void contentDiv.offsetWidth; 
+            contentDiv.classList.add('fade-in-content');
+
+            let contentHtml = '';
+            
+            if (toolName === 'calculator') {
+                contentHtml = renderScientificCalculator();
+                // Need to initialize the calculator state after rendering
+                setTimeout(initializeCalculator, 100);
+            } else if (toolName === 'periodic-table') {
+                contentHtml = renderPeriodicTable();
+                setTimeout(lucide.createIcons, 100);
+            } else if (toolName === 'unit-converter') {
+                contentHtml = renderUnitConverter();
+                // Need to initialize the converter state after rendering
+                setTimeout(initializeUnitConverter, 100); 
+            }
+
+            contentDiv.innerHTML = contentHtml;
+            lucide.createIcons();
+        }
+
+        // -------------------------------------------------------------------
+        // --- 1. SCIENTIFIC CALCULATOR IMPLEMENTATION ---
+        // -------------------------------------------------------------------
+        
+        let displayValue = '0';
+        let currentExpression = '';
+        let resultDisplayed = false;
+
+        function initializeCalculator() {
+            // Reset state
+            displayValue = '0';
+            currentExpression = '';
+            resultDisplayed = false;
+            updateCalculatorDisplay();
+        }
+        
+        function updateCalculatorDisplay() {
+            const resultEl = document.getElementById('calc-display-result');
+            const historyEl = document.getElementById('calc-display-history');
+            if(resultEl) resultEl.value = displayValue;
+            if(historyEl) historyEl.innerText = currentExpression;
+        }
+
+        window.appendInput = function(input) {
+            const displayEl = document.getElementById('calc-display-result');
+            if (!displayEl) return;
+            
+            if (resultDisplayed) {
+                if ('+-*/'.includes(input)) {
+                    currentExpression = displayValue;
+                } else {
+                    currentExpression = '';
+                }
+                displayValue = (input === '0' || '+-*/'.includes(input)) ? displayValue : '';
+                resultDisplayed = false;
+            }
+
+            if (displayValue === '0' && !'+-*/'.includes(input)) {
+                displayValue = '';
+            }
+            
+            // Basic input sanitation to prevent double operators/decimals
+            if (displayValue.length > 0 && '+-*/'.includes(input) && '+-*/'.includes(displayValue.slice(-1))) {
+                 // Replace last operator
+                 displayValue = displayValue.slice(0, -1) + input;
+            } else if (displayValue.length > 0 && input === '.' && displayValue.slice(-1) === '.') {
+                 // Ignore double decimal
+            } else {
+                displayValue += input;
+            }
+
+            currentExpression += input;
+            updateCalculatorDisplay();
+        }
+        
+        window.clearDisplay = function() {
+            displayValue = '0';
+            currentExpression = '';
+            resultDisplayed = false;
+            updateCalculatorDisplay();
+        }
+
+        window.calculateResult = function() {
+            try {
+                // Sanitize and replace custom math functions for eval
+                let safeExpression = displayValue.replace(/sin\(/g, 'Math.sin(')
+                                                 .replace(/cos\(/g, 'Math.cos(')
+                                                 .replace(/tan\(/g, 'Math.tan(')
+                                                 .replace(/log\(/g, 'Math.log10(') // Assuming log base 10
+                                                 .replace(/ln\(/g, 'Math.log(')    // Natural log
+                                                 .replace(/\^/g, '**')
+                                                 .replace(/π/g, 'Math.PI')
+                                                 .replace(/√\(/g, 'Math.sqrt(')
+                                                 .replace(/e/g, 'Math.E');
+
+                // Basic error handling for incomplete expressions
+                if (safeExpression.includes('(') && !safeExpression.includes(')')) {
+                    safeExpression += ')';
+                }
+                
+                // Final evaluation
+                let result = eval(safeExpression);
+                
+                // Handle complex numbers, infinity, or NaN
+                if (isNaN(result) || !isFinite(result)) {
+                    displayValue = 'Error';
+                } else {
+                    displayValue = result.toString();
+                }
+                
+                currentExpression = safeExpression + ' =';
+                resultDisplayed = true;
+            } catch (e) {
+                displayValue = 'Error';
+                currentExpression = 'Invalid Input';
+                resultDisplayed = true;
+            }
+            updateCalculatorDisplay();
+        }
+
+        function renderScientificCalculator() {
+            const buttonClass = "calc-button text-2xl font-bold p-3 rounded-xl shadow-md transition-all active:shadow-none active:translate-y-0.5";
+            const numberClass = `${buttonClass} bg-white text-gray-800 hover:bg-gray-100`;
+            const operatorClass = `${buttonClass} bg-orange-500 text-white hover:bg-orange-600`;
+            const functionClass = `${buttonClass} bg-blue-100 text-blue-800 hover:bg-blue-200 text-lg`;
+            const clearClass = `${buttonClass} bg-red-500 text-white hover:bg-red-600`;
+
+            return `
+                <div class="max-w-md mx-auto p-6 bg-gray-200 rounded-3xl shadow-2xl">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i data-lucide="calculator" class="w-6 h-6 mr-2 text-blue-600"></i> Scientific Calculator
+                    </h2>
+
+                    <div class="mb-4 p-4 bg-gray-800 rounded-xl shadow-inner">
+                        <div id="calc-display-history" class="calc-display text-sm text-gray-400 min-h-[1.5rem] overflow-x-auto whitespace-nowrap"></div>
+                        <input id="calc-display-result" type="text" value="0" readonly class="calc-display w-full text-4xl font-extrabold text-white bg-transparent border-none focus:ring-0 pt-1 pb-0 mb-0 outline-none overflow-x-auto">
+                    </div>
+
+                    <div class="grid grid-cols-5 gap-3">
+                        <button onclick="appendInput('sin(')" class="${functionClass}">sin</button>
+                        <button onclick="appendInput('cos(')" class="${functionClass}">cos</button>
+                        <button onclick="appendInput('tan(')" class="${functionClass}">tan</button>
+                        <button onclick="appendInput('log(')" class="${functionClass}">log</button>
+                        <button onclick="clearDisplay()" class="${clearClass}">AC</button>
+                        
+                        <button onclick="appendInput('ln(')" class="${functionClass}">ln</button>
+                        <button onclick="appendInput('√(')" class="${functionClass}">√</button>
+                        <button onclick="appendInput('π')" class="${functionClass}">π</button>
+                        <button onclick="appendInput('^')" class="${functionClass}">^</button>
+                        <button onclick="appendInput('/')" class="${operatorClass} text-3xl">÷</button>
+                        
+                        <button onclick="appendInput('7')" class="${numberClass}">7</button>
+                        <button onclick="appendInput('8')" class="${numberClass}">8</button>
+                        <button onclick="appendInput('9')" class="${numberClass}">9</button>
+                        <button onclick="appendInput('(')" class="${functionClass}">(</button>
+                        <button onclick="appendInput('*')" class="${operatorClass}">×</button>
+                        
+                        <button onclick="appendInput('4')" class="${numberClass}">4</button>
+                        <button onclick="appendInput('5')" class="${numberClass}">5</button>
+                        <button onclick="appendInput('6')" class="${numberClass}">6</button>
+                        <button onclick="appendInput(')')" class="${functionClass}">)</button>
+                        <button onclick="appendInput('-')" class="${operatorClass}">−</button>
+                        
+                        <button onclick="appendInput('1')" class="${numberClass}">1</button>
+                        <button onclick="appendInput('2')" class="${numberClass}">2</button>
+                        <button onclick="appendInput('3')" class="${numberClass}">3</button>
+                        <button onclick="calculateResult()" class="col-span-2 ${operatorClass} bg-green-600 hover:bg-green-700">=</button>
+                        
+                        <button onclick="appendInput('0')" class="col-span-2 ${numberClass}">0</button>
+                        <button onclick="appendInput('.')" class="${numberClass}">.</button>
+                        <button onclick="appendInput('+')" class="${operatorClass}">+</button>
+                        <button onclick="appendInput('e')" class="${functionClass}">e</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // -------------------------------------------------------------------
+        // --- 2. PERIODIC TABLE IMPLEMENTATION ---
+        // -------------------------------------------------------------------
+
+        const periodicTableData = [
+            { symbol: 'H', name: 'Hydrogen', number: 1, mass: 1.008, group: 1, period: 1, type: 'nonmetal' },
+            { symbol: 'He', name: 'Helium', number: 2, mass: 4.0026, group: 18, period: 1, type: 'noble-gas' },
+            { symbol: 'Li', name: 'Lithium', number: 3, mass: 6.94, group: 1, period: 2, type: 'alkali-metal' },
+            { symbol: 'Be', name: 'Beryllium', number: 4, mass: 9.0122, group: 2, period: 2, type: 'alkaline-earth-metal' },
+            { symbol: 'B', name: 'Boron', number: 5, mass: 10.81, group: 13, period: 2, type: 'metalloid' },
+            { symbol: 'C', name: 'Carbon', number: 6, mass: 12.011, group: 14, period: 2, type: 'nonmetal' },
+            { symbol: 'N', name: 'Nitrogen', number: 7, mass: 14.007, group: 15, period: 2, type: 'nonmetal' },
+            { symbol: 'O', name: 'Oxygen', number: 8, mass: 15.999, group: 16, period: 2, type: 'nonmetal' },
+            { symbol: 'F', name: 'Fluorine', number: 9, mass: 18.998, group: 17, period: 2, type: 'halogen' },
+            { symbol: 'Ne', name: 'Neon', number: 10, mass: 20.180, group: 18, period: 2, type: 'noble-gas' },
+            { symbol: 'Na', name: 'Sodium', number: 11, mass: 22.990, group: 1, period: 3, type: 'alkali-metal' },
+            { symbol: 'Mg', name: 'Magnesium', number: 12, mass: 24.305, group: 2, period: 3, type: 'alkaline-earth-metal' },
+            { symbol: 'Al', name: 'Aluminum', number: 13, mass: 26.982, group: 13, period: 3, type: 'post-transition-metal' },
+            { symbol: 'Si', name: 'Silicon', number: 14, mass: 28.085, group: 14, period: 3, type: 'metalloid' },
+            { symbol: 'P', name: 'Phosphorus', number: 15, mass: 30.974, group: 15, period: 3, type: 'nonmetal' },
+            { symbol: 'S', name: 'Sulfur', number: 16, mass: 32.06, group: 16, period: 3, type: 'nonmetal' },
+            { symbol: 'Cl', name: 'Chlorine', number: 17, mass: 35.45, group: 17, period: 3, type: 'halogen' },
+            { symbol: 'Ar', name: 'Argon', number: 18, mass: 39.948, group: 18, period: 3, type: 'noble-gas' },
+            { symbol: 'K', name: 'Potassium', number: 19, mass: 39.098, group: 1, period: 4, type: 'alkali-metal' },
+            { symbol: 'Ca', name: 'Calcium', number: 20, mass: 40.078, group: 2, period: 4, type: 'alkaline-earth-metal' },
+            { symbol: 'Sc', name: 'Scandium', number: 21, mass: 44.956, group: 3, period: 4, type: 'transition-metal' },
+            { symbol: 'Ti', name: 'Titanium', number: 22, mass: 47.867, group: 4, period: 4, type: 'transition-metal' },
+            { symbol: 'V', name: 'Vanadium', number: 23, mass: 50.942, group: 5, period: 4, type: 'transition-metal' },
+            { symbol: 'Cr', name: 'Chromium', number: 24, mass: 51.996, group: 6, period: 4, type: 'transition-metal' },
+            { symbol: 'Mn', name: 'Manganese', number: 25, mass: 54.938, group: 7, period: 4, type: 'transition-metal' },
+            { symbol: 'Fe', name: 'Iron', number: 26, mass: 55.845, group: 8, period: 4, type: 'transition-metal' },
+            { symbol: 'Co', name: 'Cobalt', number: 27, mass: 58.933, group: 9, period: 4, type: 'transition-metal' },
+            { symbol: 'Ni', name: 'Nickel', number: 28, mass: 58.693, group: 10, period: 4, type: 'transition-metal' },
+            { symbol: 'Cu', name: 'Copper', number: 29, mass: 63.546, group: 11, period: 4, type: 'transition-metal' },
+            { symbol: 'Zn', name: 'Zinc', number: 30, mass: 65.38, group: 12, period: 4, type: 'transition-metal' },
+            { symbol: 'Ga', name: 'Gallium', number: 31, mass: 69.723, group: 13, period: 4, type: 'post-transition-metal' },
+            { symbol: 'Ge', name: 'Germanium', number: 32, mass: 72.63, group: 14, period: 4, type: 'metalloid' },
+            { symbol: 'As', name: 'Arsenic', number: 33, mass: 74.922, group: 15, period: 4, type: 'metalloid' },
+            { symbol: 'Se', name: 'Selenium', number: 34, mass: 78.971, group: 16, period: 4, type: 'nonmetal' },
+            { symbol: 'Br', name: 'Bromine', number: 35, mass: 79.904, group: 17, period: 4, type: 'halogen' },
+            { symbol: 'Kr', name: 'Krypton', number: 36, mass: 83.798, group: 18, period: 4, type: 'noble-gas' },
+            { symbol: 'Rb', name: 'Rubidium', number: 37, mass: 85.468, group: 1, period: 5, type: 'alkali-metal' },
+            { symbol: 'Sr', name: 'Strontium', number: 38, mass: 87.62, group: 2, period: 5, type: 'alkaline-earth-metal' },
+            { symbol: 'Y', name: 'Yttrium', number: 39, mass: 88.906, group: 3, period: 5, type: 'transition-metal' },
+            { symbol: 'Zr', name: 'Zirconium', number: 40, mass: 91.224, group: 4, period: 5, type: 'transition-metal' },
+            { symbol: 'Nb', name: 'Niobium', number: 41, mass: 92.906, group: 5, period: 5, type: 'transition-metal' },
+            { symbol: 'Mo', name: 'Molybdenum', number: 42, mass: 95.96, group: 6, period: 5, type: 'transition-metal' },
+            { symbol: 'Tc', name: 'Technetium', number: 43, mass: 98, group: 7, period: 5, type: 'transition-metal' },
+            { symbol: 'Ru', name: 'Ruthenium', number: 44, mass: 101.07, group: 8, period: 5, type: 'transition-metal' },
+            { symbol: 'Rh', name: 'Rhodium', number: 45, mass: 102.91, group: 9, period: 5, type: 'transition-metal' },
+            { symbol: 'Pd', name: 'Palladium', number: 46, mass: 106.42, group: 10, period: 5, type: 'transition-metal' },
+            { symbol: 'Ag', name: 'Silver', number: 47, mass: 107.87, group: 11, period: 5, type: 'transition-metal' },
+            { symbol: 'Cd', name: 'Cadmium', number: 48, mass: 112.41, group: 12, period: 5, type: 'transition-metal' },
+            { symbol: 'In', name: 'Indium', number: 49, mass: 114.82, group: 13, period: 5, type: 'post-transition-metal' },
+            { symbol: 'Sn', name: 'Tin', number: 50, mass: 118.71, group: 14, period: 5, type: 'post-transition-metal' },
+            { symbol: 'Sb', name: 'Antimony', number: 51, mass: 121.76, group: 15, period: 5, type: 'metalloid' },
+            { symbol: 'Te', name: 'Tellurium', number: 52, mass: 127.60, group: 16, period: 5, type: 'metalloid' },
+            { symbol: 'I', name: 'Iodine', number: 53, mass: 126.90, group: 17, period: 5, type: 'halogen' },
+            { symbol: 'Xe', name: 'Xenon', number: 54, mass: 131.29, group: 18, period: 5, type: 'noble-gas' },
+            { symbol: 'Cs', name: 'Cesium', number: 55, mass: 132.91, group: 1, period: 6, type: 'alkali-metal' },
+            { symbol: 'Ba', name: 'Barium', number: 56, mass: 137.33, group: 2, period: 6, type: 'alkaline-earth-metal' },
+            { symbol: 'La-Lu', name: 'Lanthanides', number: 57-71, mass: '', group: 3, period: 6, type: 'lanthanide' },
+            { symbol: 'Hf', name: 'Hafnium', number: 72, mass: 178.49, group: 4, period: 6, type: 'transition-metal' },
+            { symbol: 'Ta', name: 'Tantalum', number: 73, mass: 180.95, group: 5, period: 6, type: 'transition-metal' },
+            { symbol: 'W', name: 'Tungsten', number: 74, mass: 183.84, group: 6, period: 6, type: 'transition-metal' },
+            { symbol: 'Re', name: 'Rhenium', number: 75, mass: 186.21, group: 7, period: 6, type: 'transition-metal' },
+            { symbol: 'Os', name: 'Osmium', number: 76, mass: 190.23, group: 8, period: 6, type: 'transition-metal' },
+            { symbol: 'Ir', name: 'Iridium', number: 77, mass: 192.22, group: 9, period: 6, type: 'transition-metal' },
+            { symbol: 'Pt', name: 'Platinum', number: 78, mass: 195.08, group: 10, period: 6, type: 'transition-metal' },
+            { symbol: 'Au', name: 'Gold', number: 79, mass: 196.97, group: 11, period: 6, type: 'transition-metal' },
+            { symbol: 'Hg', name: 'Mercury', number: 80, mass: 200.59, group: 12, period: 6, type: 'transition-metal' },
+            { symbol: 'Tl', name: 'Thallium', number: 81, mass: 204.38, group: 13, period: 6, type: 'post-transition-metal' },
+            { symbol: 'Pb', name: 'Lead', number: 82, mass: 207.2, group: 14, period: 6, type: 'post-transition-metal' },
+            { symbol: 'Bi', name: 'Bismuth', number: 83, mass: 208.98, group: 15, period: 6, type: 'post-transition-metal' },
+            { symbol: 'Po', name: 'Polonium', number: 84, mass: 209, group: 16, period: 6, type: 'metalloid' },
+            { symbol: 'At', name: 'Astatine', number: 85, mass: 210, group: 17, period: 6, type: 'halogen' },
+            { symbol: 'Rn', name: 'Radon', number: 86, mass: 222, group: 18, period: 6, type: 'noble-gas' },
+            { symbol: 'Fr', name: 'Francium', number: 87, mass: 223, group: 1, period: 7, type: 'alkali-metal' },
+            { symbol: 'Ra', name: 'Radium', number: 88, mass: 226, group: 2, period: 7, type: 'alkaline-earth-metal' },
+            { symbol: 'Ac-Lr', name: 'Actinides', number: 89-103, mass: '', group: 3, period: 7, type: 'actinide' },
+            { symbol: 'Rf', name: 'Rutherfordium', number: 104, mass: 267, group: 4, period: 7, type: 'transition-metal' },
+            { symbol: 'Db', name: 'Dubnium', number: 105, mass: 268, group: 5, period: 7, type: 'transition-metal' },
+            { symbol: 'Sg', name: 'Seaborgium', number: 106, mass: 271, group: 6, period: 7, type: 'transition-metal' },
+            { symbol: 'Bh', name: 'Bohrium', number: 107, mass: 272, group: 7, period: 7, type: 'transition-metal' },
+            { symbol: 'Hs', name: 'Hassium', number: 108, mass: 270, group: 8, period: 7, type: 'transition-metal' },
+            { symbol: 'Mt', name: 'Meitnerium', number: 109, mass: 276, group: 9, period: 7, type: 'unknown' },
+            { symbol: 'Ds', name: 'Darmstadtium', number: 110, mass: 281, group: 10, period: 7, type: 'unknown' },
+            { symbol: 'Rg', name: 'Roentgenium', number: 111, mass: 280, group: 11, period: 7, type: 'unknown' },
+            { symbol: 'Cn', name: 'Copernicium', number: 112, mass: 285, group: 12, period: 7, type: 'transition-metal' },
+            { symbol: 'Nh', name: 'Nihonium', number: 113, mass: 286, group: 13, period: 7, type: 'post-transition-metal' },
+            { symbol: 'Fl', name: 'Flerovium', number: 114, mass: 289, group: 14, period: 7, type: 'post-transition-metal' },
+            { symbol: 'Mc', name: 'Moscovium', number: 115, mass: 290, group: 15, period: 7, type: 'post-transition-metal' },
+            { symbol: 'Lv', name: 'Livermorium', number: 116, mass: 293, group: 16, period: 7, type: 'post-transition-metal' },
+            { symbol: 'Ts', name: 'Tennessine', number: 117, mass: 294, group: 17, period: 7, type: 'halogen' },
+            { symbol: 'Og', name: 'Oganesson', number: 118, mass: 294, group: 18, period: 7, type: 'noble-gas' },
+            // Lanthanides (57-71)
+            { symbol: 'La', name: 'Lanthanum', number: 57, mass: 138.91, group: 'L', period: 6, type: 'lanthanide' },
+            { symbol: 'Ce', name: 'Cerium', number: 58, mass: 140.12, group: 'L', period: 6, type: 'lanthanide' },
+            { symbol: 'Pr', name: 'Praseodymium', number: 59, mass: 140.91, group: 'L', period: 6, type: 'lanthanide' },
+            { symbol: 'Nd', name: 'Neodymium', number: 60, mass: 144.24, group: 'L', period: 6, type: 'lanthanide' },
+            { symbol: 'Pm', name: 'Promethium', number: 61, mass: 145, group: 'L', period: 6, type: 'lanthanide' },
+            { symbol: 'Sm', name: 'Samarium', number: 62, mass: 150.36, group: 'L', period: 6, type: 'lanthanide' },
+            { symbol: 'Eu', name: 'Europium', number: 63, mass: 151.96, group: 'L', period: 6, type: 'lanthanide' },
+            { symbol: 'Gd', name: 'Gadolinium', number: 64, mass: 157.25, group: 'L', period: 6, type: 'lanthanide' },
+            { symbol: 'Tb', name: 'Terbium', number: 65, mass: 158.93, group: 'L', period: 6, type: 'lanthanide' },
+            { symbol: 'Dy', name: 'Dysprosium', number: 66, mass: 162.50, group: 'L', period: 6, type: 'lanthanide' },
+            { symbol: 'Ho', name: 'Holmium', number: 67, mass: 164.93, group: 'L', period: 6, type: 'lanthanide' },
+            { symbol: 'Er', name: 'Erbium', number: 68, mass: 167.26, group: 'L', period: 6, type: 'lanthanide' },
+            { symbol: 'Tm', name: 'Thulium', number: 69, mass: 168.93, group: 'L', period: 6, type: 'lanthanide' },
+            { symbol: 'Yb', name: 'Ytterbium', number: 70, mass: 173.05, group: 'L', period: 6, type: 'lanthanide' },
+            { symbol: 'Lu', name: 'Lutetium', number: 71, mass: 174.97, group: 'L', period: 6, type: 'lanthanide' },
+            // Actinides (89-103)
+            { symbol: 'Ac', name: 'Actinium', number: 89, mass: 227, group: 'A', period: 7, type: 'actinide' },
+            { symbol: 'Th', name: 'Thorium', number: 90, mass: 232.04, group: 'A', period: 7, type: 'actinide' },
+            { symbol: 'Pa', name: 'Protactinium', number: 91, mass: 231.04, group: 'A', period: 7, type: 'actinide' },
+            { symbol: 'U', name: 'Uranium', number: 92, mass: 238.03, group: 'A', period: 7, type: 'actinide' },
+            { symbol: 'Np', name: 'Neptunium', number: 93, mass: 237, group: 'A', period: 7, type: 'actinide' },
+            { symbol: 'Pu', name: 'Plutonium', number: 94, mass: 244, group: 'A', period: 7, type: 'actinide' },
+            { symbol: 'Am', name: 'Americium', number: 95, mass: 243, group: 'A', period: 7, type: 'actinide' },
+            { symbol: 'Cm', name: 'Curium', number: 96, mass: 247, group: 'A', period: 7, type: 'actinide' },
+            { symbol: 'Bk', name: 'Berkelium', number: 97, mass: 247, group: 'A', period: 7, type: 'actinide' },
+            { symbol: 'Cf', name: 'Californium', number: 98, mass: 251, group: 'A', period: 7, type: 'actinide' },
+            { symbol: 'Es', name: 'Einsteinium', number: 99, mass: 252, group: 'A', period: 7, type: 'actinide' },
+            { symbol: 'Fm', name: 'Fermium', number: 100, mass: 257, group: 'A', period: 7, type: 'actinide' },
+            { symbol: 'Md', name: 'Mendelevium', number: 101, mass: 258, group: 'A', period: 7, type: 'actinide' },
+            { symbol: 'No', name: 'Nobelium', number: 102, mass: 259, group: 'A', period: 7, type: 'actinide' },
+            { symbol: 'Lr', name: 'Lawrencium', number: 103, mass: 262, group: 'A', period: 7, type: 'actinide' },
+        ];
+
+        window.showElementProperties = function(atomicNumber) {
+            const element = periodicTableData.find(e => e.number === atomicNumber);
+            if (!element) return;
+            
+            const detailsHtml = `
+                <p class="text-4xl font-extrabold text-blue-600 mb-2">${element.symbol}</p>
+                <h4 class="text-xl font-bold text-gray-900">${element.name}</h4>
+                <p class="text-sm text-gray-600 border-b pb-2">Atomic Number: <span class="font-semibold text-gray-800">${element.number}</span></p>
+                <div class="grid grid-cols-2 gap-y-2 mt-2 text-sm">
+                    <p class="font-medium text-gray-700">Atomic Mass:</p>
+                    <p class="font-mono text-right text-gray-900">${element.mass} u</p>
+                    <p class="font-medium text-gray-700">Period:</p>
+                    <p class="font-mono text-right text-gray-900">${element.period}</p>
+                    <p class="font-medium text-gray-700">Group:</p>
+                    <p class="font-mono text-right text-gray-900">${element.group}</p>
+                    <p class="font-medium text-gray-700">Category:</p>
+                    <p class="font-mono text-right text-gray-900 capitalize">${element.type.replace('-', ' ')}</p>
+                </div>
+                <p class="text-xs text-gray-500 mt-4 italic">Full details not available in this simplified tool.</p>
+            `;
+            
+            document.getElementById('element-details').innerHTML = detailsHtml;
+            const modal = document.getElementById('element-modal');
+            const content = document.getElementById('element-modal-content');
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            // Force reflow to restart transition
+            void content.offsetWidth; 
+            content.classList.remove('scale-95', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }
+
+        window.closeElementProperties = function() {
+            const modal = document.getElementById('element-modal');
+            const content = document.getElementById('element-modal-content');
+            
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+
+            setTimeout(() => {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }, 300); // Match transition duration
+        }
+
+        function renderLegend() {
+            const types = [
+                { class: 'color-nonmetal', name: 'Nonmetal' },
+                { class: 'color-alkali-metal', name: 'Alkali Metal' },
+                { class: 'color-alkaline-earth-metal', name: 'Alkaline Earth Metal' },
+                { class: 'color-metalloid', name: 'Metalloid' },
+                { class: 'color-post-transition-metal', name: 'Post-Transition Metal' },
+                { class: 'color-transition-metal', name: 'Transition Metal' },
+                { class: 'color-lanthanide', name: 'Lanthanide' },
+                { class: 'color-actinide', name: 'Actinide' },
+                { class: 'color-noble-gas', name: 'Noble Gas' },
+                { class: 'color-halogen', name: 'Halogen' },
+                { class: 'color-unknown', name: 'Unknown Properties' },
+            ];
+
+            const legendItems = types.map(type => `
+                <div class="flex items-center space-x-2">
+                    <div class="w-4 h-4 rounded-sm ${type.class} border border-gray-300"></div>
+                    <span class="text-sm text-gray-700 whitespace-nowrap">${type.name}</span>
+                </div>
+            `).join('');
+
+            return `
+                <div class="flex flex-wrap gap-4 p-4 bg-white border border-gray-200 rounded-lg shadow-sm justify-center">
+                    ${legendItems}
+                </div>
+            `;
+        }
+        
+        // This function creates the HTML for the Lanthanide and Actinide series, 
+        // positioned below the main table.
+        function renderLanthanideActinideBlock() {
+            const lanthanides = periodicTableData.filter(e => e.group === 'L');
+            const actinides = periodicTableData.filter(e => e.group === 'A');
+
+            const renderElementRow = (elements, startGroup) => elements.map((element, index) => {
+                const typeClass = `color-${element.type}`;
+                // Grid column position: offset by 4 columns (for groups 1-3)
+                const gridCol = index + 4; 
+                return `
+                    <div class="element-box ${typeClass} border border-gray-400 p-1 rounded-md text-center cursor-pointer hover:shadow-lg transition-shadow" 
+                         onclick="showElementProperties(${element.number})"
+                         style="grid-column: ${gridCol} / span 1; grid-row: ${startGroup} / span 1;">
+                        <span class="block font-semibold">${element.symbol}</span>
+                        <span class="block text-xs">${element.number}</span>
+                    </div>
+                `;
+            }).join('');
+
+            const lanthanidesHtml = renderElementRow(lanthanides, 1);
+            const actinidesHtml = renderElementRow(actinides, 2);
+
+            return `
+                <div class="mt-8 pt-6 border-t border-gray-200 w-full overflow-x-auto">
+                    <div class="periodic-table-grid mx-auto min-w-[1200px] text-xs mt-4">
+                        <div class="font-bold text-gray-700 text-right pr-2" style="grid-column: 1 / span 3; grid-row: 1 / span 1;">Lanthanides (57-71)</div>
+                        <div class="font-bold text-gray-700 text-right pr-2" style="grid-column: 1 / span 3; grid-row: 2 / span 1;">Actinides (89-103)</div>
+
+                        ${lanthanidesHtml}
+                        ${actinidesHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderPeriodicTable() {
+            const elements = periodicTableData.filter(e => e.group !== 'L' && e.group !== 'A');
+            
+            // Grid layout: 7 rows (periods) x 18 columns (groups)
+            // Groups 1, 2, and 13-18 are fixed. Group 3 has placeholders.
+
+            // Helper to render a single element block for the main table
+            const renderElement = (element) => {
+                const typeClass = `color-${element.type}`;
+                return `
+                    <div class="element-box ${typeClass} border border-gray-400 p-1 rounded-md text-center cursor-pointer hover:shadow-lg transition-shadow" 
+                         onclick="showElementProperties(${element.number})"
+                         style="grid-column: ${element.group} / span 1; grid-row: ${element.period} / span 1;">
+                        <span class="block text-xs font-medium">${element.number}</span>
+                        <span class="block font-bold text-lg leading-none">${element.symbol}</span>
+                        <span class="block text-xs">${element.mass === '' ? '–' : element.mass}</span>
+                    </div>
+                `;
+            };
+            
+            // HTML for the main table grid elements
+            let tableHtml = elements.map(renderElement).join('');
+
+            // Add placeholders for the empty spots and the Lanthanide/Actinide block links
+            
+            // Add Group labels (1 to 18)
+            let groupLabels = Array.from({length: 18}, (_, i) => i + 1).map(g => 
+                `<div class="font-bold text-gray-500 text-center text-sm" style="grid-column: ${g} / span 1; grid-row: 0 / span 1;">${g}</div>`
+            ).join('');
+            
+            // Add Period labels (1 to 7)
+            let periodLabels = Array.from({length: 7}, (_, i) => i + 1).map(p => 
+                `<div class="font-bold text-gray-500 text-right pr-2 text-sm" style="grid-column: 0 / span 1; grid-row: ${p} / span 1;">${p}</div>`
+            ).join('');
+            
+            // Placeholder for Lanthanides (La-Lu, Atomic Nos 57-71, Period 6, Group 3)
+            const lanthanidePlaceholder = `
+                <div class="element-box border border-dashed border-gray-400 p-1 rounded-md text-center bg-gray-100 flex flex-col justify-center text-gray-600 cursor-pointer hover:border-blue-500 transition-colors"
+                     style="grid-column: 3 / span 1; grid-row: 6 / span 1;"
+                     onclick="updateToolContent('periodic-table')">
+                    <span class="block font-semibold">57-71</span>
+                    <span class="block text-xs">La-Lu</span>
+                </div>
+            `;
+
+            // Placeholder for Actinides (Ac-Lr, Atomic Nos 89-103, Period 7, Group 3)
+            const actinidePlaceholder = `
+                <div class="element-box border border-dashed border-gray-400 p-1 rounded-md text-center bg-gray-100 flex flex-col justify-center text-gray-600 cursor-pointer hover:border-blue-500 transition-colors"
+                     style="grid-column: 3 / span 1; grid-row: 7 / span 1;"
+                     onclick="updateToolContent('periodic-table')">
+                    <span class="block font-semibold">89-103</span>
+                    <span class="block text-xs">Ac-Lr</span>
+                </div>
+            `;
+            
+            // Empty spaces (e.g., periods 2-3, groups 3-12)
+            const emptySpaces = [];
+            // Period 2: Groups 3-12 (col 3 to 12)
+            for(let g = 3; g <= 12; g++) {
+                emptySpaces.push(`<div style="grid-column: ${g} / span 1; grid-row: 2 / span 1;" class="bg-gray-50"></div>`);
+            }
+            // Period 3: Groups 3-12 (col 3 to 12)
+            for(let g = 3; g <= 12; g++) {
+                emptySpaces.push(`<div style="grid-column: ${g} / span 1; grid-row: 3 / span 1;" class="bg-gray-50"></div>`);
+            }
+            // Period 1: Groups 2-17 (col 2 to 17)
+             for(let g = 2; g <= 17; g++) {
+                emptySpaces.push(`<div style="grid-column: ${g} / span 1; grid-row: 1 / span 1;" class="bg-gray-50"></div>`);
+            }
+
+
+            return `
+                <div class="space-y-8">
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center mb-4">
+                        <i data-lucide="atom" class="w-6 h-6 mr-2 text-blue-600"></i> The Periodic Table of Elements
+                    </h2>
+                    
+                    ${renderLegend()}
+
+                    <div class="w-full overflow-x-auto">
+                        <div class="periodic-table-grid mx-auto min-w-[1200px] text-xs" 
+                             style="display: grid; grid-template-columns: 3rem repeat(18, 1fr); grid-template-rows: 2rem repeat(7, 4.5rem); gap: 0.25rem;">
+                            
+                            ${groupLabels}
+                            ${periodLabels}
+                            ${emptySpaces.join('')}
+                            
+                            ${lanthanidePlaceholder}
+                            ${actinidePlaceholder}
+                            
+                            ${tableHtml}
+                        </div>
+                    </div>
+
+                    ${renderLanthanideActinideBlock()}
+
+                    <p class="text-sm text-gray-500 mt-6">Click on any element to view detailed properties.</p>
+                </div>
+            `;
+        }
+
+
+        // -------------------------------------------------------------------
+        // --- 3. UNIT CONVERTER IMPLEMENTATION ---
+        // -------------------------------------------------------------------
+
+        // Unit definitions for various categories
+        const units = {
+            'Length': [
+                { name: 'Meter', symbol: 'm', factor: 1 },
+                { name: 'Kilometer', symbol: 'km', factor: 1000 },
+                { name: 'Centimeter', symbol: 'cm', factor: 0.01 },
+                { name: 'Millimeter', symbol: 'mm', factor: 0.001 },
+                { name: 'Micrometer', symbol: 'µm', factor: 1e-6 },
+                { name: 'Nanometer', symbol: 'nm', factor: 1e-9 },
+                { name: 'Inch', symbol: 'in', factor: 0.0254 },
+                { name: 'Foot', symbol: 'ft', factor: 0.3048 },
+            ],
+            'Mass': [
+                { name: 'Kilogram', symbol: 'kg', factor: 1 },
+                { name: 'Gram', symbol: 'g', factor: 0.001 },
+                { name: 'Milligram', symbol: 'mg', factor: 1e-6 },
+                { name: 'Metric Ton', symbol: 't', factor: 1000 },
+                { name: 'Pound', symbol: 'lb', factor: 0.453592 },
+                { name: 'Atomic Mass Unit', symbol: 'u', factor: 1.660539e-27 }, // For chemistry
+            ],
+            'Temperature': [ // Requires special conversion logic
+                { name: 'Celsius', symbol: '°C', factor: 'C' },
+                { name: 'Fahrenheit', symbol: '°F', factor: 'F' },
+                { name: 'Kelvin', symbol: 'K', factor: 'K' },
+            ],
+            'Area': [
+                { name: 'Square Meter', symbol: 'm²', factor: 1 },
+                { name: 'Square Kilometer', symbol: 'km²', factor: 1e6 },
+                { name: 'Hectare', symbol: 'ha', factor: 10000 },
+                { name: 'Acre', symbol: 'ac', factor: 4046.86 },
+                { name: 'Square Foot', symbol: 'ft²', factor: 0.092903 },
+            ],
+            'Volume': [
+                { name: 'Cubic Meter', symbol: 'm³', factor: 1 },
+                { name: 'Liter', symbol: 'L', factor: 0.001 },
+                { name: 'Milliliter', symbol: 'mL', factor: 1e-6 },
+                { name: 'Cubic Foot', symbol: 'ft³', factor: 0.028317 },
+                { name: 'Gallon (US)', symbol: 'gal', factor: 0.00378541 },
+            ],
+            'Time': [
+                { name: 'Second', symbol: 's', factor: 1 },
+                { name: 'Minute', symbol: 'min', factor: 60 },
+                { name: 'Hour', symbol: 'hr', factor: 3600 },
+                { name: 'Day', symbol: 'day', factor: 86400 },
+                { name: 'Year', symbol: 'yr', factor: 31536000 },
+            ]
+        };
+
+        window.__currentCategory = 'Length';
+
+        function initializeUnitConverter() {
+            // Set initial state
+            window.__currentCategory = 'Length';
+            document.getElementById('category-select').value = 'Length';
+            updateUnitOptions('Length');
+            // Clear inputs/output
+            document.getElementById('from-value').value = '';
+            document.getElementById('to-value').value = '';
+        }
+        
+        window.changeCategory = function(category) {
+            window.__currentCategory = category;
+            updateUnitOptions(category);
+            document.getElementById('from-value').value = '';
+            document.getElementById('to-value').value = '';
+        }
+
+        function updateUnitOptions(category) {
+            const unitList = units[category] || [];
+            const fromSelect = document.getElementById('from-unit');
+            const toSelect = document.getElementById('to-unit');
+
+            // Save current selections
+            const currentFrom = fromSelect.value;
+            const currentTo = toSelect.value;
+
+            // Clear existing options
+            fromSelect.innerHTML = '';
+            toSelect.innerHTML = '';
+
+            // Populate new options
+            unitList.forEach(unit => {
+                const option = document.createElement('option');
+                option.value = unit.symbol;
+                option.textContent = `${unit.name} (${unit.symbol})`;
+                fromSelect.appendChild(option.cloneNode(true));
+                toSelect.appendChild(option);
+            });
+            
+            // Restore previous selection if still available, otherwise default to first
+            if ([...fromSelect.options].some(opt => opt.value === currentFrom)) {
+                fromSelect.value = currentFrom;
+            } else if (fromSelect.options.length > 0) {
+                 fromSelect.value = fromSelect.options[0].value;
+            }
+
+            if ([...toSelect.options].some(opt => opt.value === currentTo)) {
+                toSelect.value = currentTo;
+            } else if (toSelect.options.length > 1) {
+                // Default to the second item to avoid "from" and "to" being the same
+                toSelect.value = toSelect.options[1].value;
+            } else if (toSelect.options.length === 1) {
+                toSelect.value = toSelect.options[0].value;
+            }
+        }
+
+        window.convertUnits = function(sourceId) {
+            const category = window.__currentCategory;
+            const fromUnitSymbol = document.getElementById('from-unit').value;
+            const toUnitSymbol = document.getElementById('to-unit').value;
+            const fromValueEl = document.getElementById('from-value');
+            const toValueEl = document.getElementById('to-value');
+
+            let inputValue = parseFloat(fromValueEl.value);
+
+            if (isNaN(inputValue)) {
+                toValueEl.value = 'Invalid Input';
+                return;
+            }
+
+            const unitList = units[category];
+            const fromUnit = unitList.find(u => u.symbol === fromUnitSymbol);
+            const toUnit = unitList.find(u => u.symbol === toUnitSymbol);
+
+            if (!fromUnit || !toUnit) {
+                toValueEl.value = 'Error';
+                return;
+            }
+
+            let result;
+
+            if (category === 'Temperature') {
+                // Temperature requires non-linear conversion
+                let kelvinValue;
+
+                // 1. Convert input to Kelvin (Base Unit)
+                if (fromUnit.symbol === 'K') {
+                    kelvinValue = inputValue;
+                } else if (fromUnit.symbol === '°C') {
+                    kelvinValue = inputValue + 273.15;
+                } else if (fromUnit.symbol === '°F') {
+                    kelvinValue = (inputValue - 32) * (5/9) + 273.15;
+                }
+                
+                // 2. Convert from Kelvin to desired output unit
+                if (toUnit.symbol === 'K') {
+                    result = kelvinValue;
+                } else if (toUnit.symbol === '°C') {
+                    result = kelvinValue - 273.15;
+                } else if (toUnit.symbol === '°F') {
+                    result = (kelvinValue - 273.15) * (9/5) + 32;
+                } else {
+                     result = NaN; // Should not happen
+                }
+
+            } else {
+                // Linear conversion (Base Unit is always factor=1 unit, e.g., Meter, Kilogram)
+
+                // 1. Convert input value to Base Unit
+                const baseValue = inputValue * fromUnit.factor;
+                
+                // 2. Convert from Base Unit to target unit
+                result = baseValue / toUnit.factor;
+            }
+
+            if (isNaN(result) || !isFinite(result)) {
+                toValueEl.value = 'Error';
+            } else {
+                // Use toFixed for a clean display, then parseFloat to remove trailing zeros
+                toValueEl.value = parseFloat(result.toFixed(6));
+            }
+        }
+
+        function renderUnitConverter() {
+            const categories = Object.keys(units).map(cat => `
+                <option value="${cat}">${cat}</option>
+            `).join('');
+
+            return `
+                <div class="max-w-xl mx-auto p-4 lg:p-6 bg-white rounded-2xl shadow-lg border border-gray-100">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center border-b pb-3">
+                        <i data-lucide="scale" class="w-6 h-6 mr-2 text-green-600"></i> Scientific Unit Converter
+                    </h2>
+
+                    <div class="mb-6">
+                        <label for="category-select" class="block text-sm font-medium text-gray-700 mb-2">Conversion Category</label>
+                        <select id="category-select" 
+                                onchange="changeCategory(this.value)"
+                                class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 text-lg font-semibold focus:ring-green-500 focus:border-green-500 transition">
+                            ${categories}
+                        </select>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                            <label for="from-value" class="block text-xs font-semibold text-blue-700 uppercase mb-2">Convert From</label>
+                            <div class="flex space-x-3">
+                                <input type="number" id="from-value" 
+                                       oninput="convertUnits('from')" 
+                                       placeholder="Enter value"
+                                       class="flex-1 p-3 border border-blue-300 rounded-lg text-lg font-mono focus:ring-blue-500 focus:border-blue-500">
+                                <select id="from-unit" 
+                                        onchange="convertUnits('from')"
+                                        class="w-36 p-3 border border-blue-300 rounded-lg text-lg font-medium focus:ring-blue-500 focus:border-blue-500">
+                                    </select>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button onclick="swapUnits()" class="p-2 bg-gray-200 rounded-full hover:bg-gray-300 transition shadow-md">
+                                <i data-lucide="switch-vertical" class="w-6 h-6 text-gray-600"></i>
+                            </button>
+                        </div>
+
+                        <div class="bg-green-50 p-4 rounded-xl border border-green-200">
+                            <label for="to-value" class="block text-xs font-semibold text-green-700 uppercase mb-2">Convert To (Result)</label>
+                            <div class="flex space-x-3">
+                                <input type="text" id="to-value" 
+                                       readonly 
+                                       placeholder="Result"
+                                       class="flex-1 p-3 border border-green-300 rounded-lg text-lg font-mono bg-white text-green-800 font-bold">
+                                <select id="to-unit" 
+                                        onchange="convertUnits('to')"
+                                        class="w-36 p-3 border border-green-300 rounded-lg text-lg font-medium focus:ring-green-500 focus:border-green-500">
+                                    </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            `;
+        }
+        
+        window.swapUnits = function() {
+            const fromUnit = document.getElementById('from-unit');
+            const toUnit = document.getElementById('to-unit');
+            const temp = fromUnit.value;
+            fromUnit.value = toUnit.value;
+            toUnit.value = temp;
+            
+            // Re-run conversion with the swapped units
+            convertUnits('from');
+        }
+
+        // -------------------------------------------------------------------
+        // --- END OF TOOL IMPLEMENTATION ---
+        // -------------------------------------------------------------------
+
+        // --- CORE PAGE RENDER FUNCTIONS (Dashboard, Subject, Lesson, Profile, etc. - Unchanged) ---
+        
+        function renderDashboardPage() { /* ... function body ... */ 
+            const totalChapters = calculateTotalChapters();
+            const completedChapters = calculateCompletedChapters();
+            const progressPercentage = totalChapters > 0 ? Math.round((completedChapters / totalChapters) * 100) : 0;
+            const incompleteSubjects = Object.keys(ncertChapters).filter(subject => 
+                ncertChapters[subject].some(chapter => !userProgress[chapter.id]?.completed)
+            );
+            
+            let recommendedSubject = incompleteSubjects[Math.floor(Math.random() * incompleteSubjects.length)] || 'Physics';
+
+            const courseCards = courseData.map(course => renderCourseCard(course)).join('');
+
+            return `
+                <div class="content-area p-6 lg:p-10 welcome-card-animate" style="animation-delay: 0.1s;">
+                    <div class="lg:flex justify-between items-start mb-10 border-b pb-6">
+                        <div class="welcome-text-animate" style="animation-delay: 0.3s;">
+                            <h1 class="text-3xl lg:text-4xl font-extrabold text-gray-900 mb-2">Welcome Back, Learner!</h1>
+                            <p class="text-lg text-gray-600">Your Class 12 PCMB platform. Let's make today productive.</p>
+                        </div>
+                        <div class="mt-6 lg:mt-0 flex items-center justify-center lg:justify-end space-x-4 welcome-text-animate" style="animation-delay: 0.5s;">
+                            <div class="text-right">
+                                <p class="text-4xl font-extrabold hikmah-primary">${progressPercentage}%</p>
+                                <p class="text-sm text-gray-500">Overall Progress</p>
+                            </div>
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center border-4 border-green-300 shadow-lg">
+                                <i data-lucide="check-square" class="w-8 h-8 text-green-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-1 space-y-8">
+                            <div class="p-6 bg-blue-50 rounded-xl border border-blue-200 shadow-md transition transform hover:shadow-lg hover:translate-y-[-2px] welcome-card-animate" style="animation-delay: 0.7s;">
+                                <h3 class="text-xl font-bold text-blue-700 mb-3 flex items-center">
+                                    <i data-lucide="zap" class="w-5 h-5 mr-2 text-blue-600"></i> Quick Start
+                                </h3>
+                                <p class="text-gray-600 mb-4">You have ${totalChapters - completedChapters} chapters left. Pick up where you left off!</p>
+                                <button class="hikmah-bg-primary text-white w-full py-3 rounded-lg font-semibold shadow-lg hover:hikmah-hover transition"
+                                    onclick="renderPage('subject', '${recommendedSubject}')">
+                                    <i data-lucide="arrow-right" class="w-5 h-5 mr-2 inline-block"></i> Go to ${recommendedSubject}
+                                </button>
+                            </div>
+                            
+                            <div class="p-6 bg-purple-50 rounded-xl border border-purple-200 shadow-md transition transform hover:shadow-lg hover:translate-y-[-2px] welcome-card-animate" style="animation-delay: 0.8s;">
+                                <h3 class="text-xl font-bold text-purple-700 mb-3 flex items-center">
+                                    <i data-lucide="wrench" class="w-5 h-5 mr-2 text-purple-600"></i> Essential Tools
+                                </h3>
+                                <p class="text-gray-600 mb-4">Access the calculator and periodic table instantly.</p>
+                                <button class="bg-purple-600 text-white w-full py-3 rounded-lg font-semibold shadow-lg hover:bg-purple-700 transition"
+                                    onclick="renderPage('tools')">
+                                    <i data-lucide="calculator" class="w-5 h-5 mr-2 inline-block"></i> Open Tools
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-2">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center welcome-text-animate" style="animation-delay: 0.6s;">
+                                <i data-lucide="book-open-text" class="w-6 h-6 mr-2 text-orange-600"></i> Recommended Courses
+                            </h2>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                ${courseCards}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderSubjectPage(subject) { /* ... function body ... */ 
+            const chapters = ncertChapters[subject] || [];
+            
+            const chapterCards = chapters.map(chapter => {
+                const isComplete = userProgress[chapter.id]?.completed === true;
+                return renderChapterCard(subject, chapter, isComplete);
+            }).join('');
+            
+            const totalChapters = chapters.length;
+            const completedCount = chapters.filter(c => userProgress[c.id]?.completed === true).length;
+            const progressPercentage = totalChapters > 0 ? Math.round((completedCount / totalChapters) * 100) : 0;
+            const progressBarColor = progressPercentage === 100 ? 'bg-green-500' : 'hikmah-bg-primary';
+
+            let subjectIcon = 'book-open';
+            let iconColor = 'text-blue-600';
+            if (subject === 'Chemistry') { subjectIcon = 'flask-conical'; iconColor = 'text-orange-600'; }
+            if (subject === 'Math') { subjectIcon = 'superscript'; iconColor = 'text-green-600'; }
+            if (subject === 'Biology') { subjectIcon = 'dna'; iconColor = 'text-purple-600'; }
+
+            return `
+                <div class="content-area p-6 lg:p-10 fade-in-content">
+                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 pb-4 border-b border-gray-200">
+                        <h1 class="text-3xl lg:text-4xl font-extrabold text-gray-900 flex items-center">
+                            <i data-lucide="${subjectIcon}" class="w-8 h-8 mr-3 ${iconColor}"></i> ${subject} - NCERT Class 12
+                        </h1>
+                        <div class="w-full lg:w-96 mt-4 lg:mt-0">
+                            <div class="text-right text-sm font-medium text-gray-600 mb-1">
+                                ${completedCount} / ${totalChapters} Chapters Completed (${progressPercentage}%)
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="${progressBarColor} h-2.5 rounded-full" style="width: ${progressPercentage}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        ${chapterCards}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderChapterCard(subject, chapter, isComplete) { /* ... function body ... */ 
+            const statusIcon = isComplete 
+                ? '<i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i>' 
+                : '<i data-lucide="circle" class="w-5 h-5 text-gray-400"></i>';
+            const bgColor = isComplete ? 'bg-green-50' : 'bg-white';
+            const borderColor = isComplete ? 'border-green-200' : 'border-gray-200';
+            
+            return `
+                <div class="chapter-card ${bgColor} border ${borderColor} rounded-xl p-5 shadow-sm"
+                    onclick="renderPage('lesson', '${subject}', '${chapter.id}')">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-sm font-semibold text-gray-500">${subject} | Chapter ${chapter.chapter}</span>
+                        ${statusIcon}
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 line-clamp-2">${chapter.title}</h3>
+                    <p class="text-sm text-gray-500 mt-2">${isComplete ? 'Reviewed' : 'Start Reading'}</p>
+                </div>
+            `;
+        }
+        
+        function renderLessonPage(subject, chapterId) { /* ... function body ... */ 
+            const chapter = ncertChapters[subject].find(c => c.id === chapterId);
+            if (!chapter) return renderErrorPage('Error', 'Chapter not found.');
+
+            const isComplete = userProgress[chapterId]?.completed === true;
+            const completionButton = isComplete 
+                ? `<button onclick="window.toggleChapterComplete('${subject}', '${chapterId}', false)" class="bg-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-600 transition flex items-center">
+                        <i data-lucide="x-circle" class="w-5 h-5 mr-2"></i> Mark as Incomplete
+                    </button>`
+                : `<button onclick="window.toggleChapterComplete('${subject}', '${chapterId}', true)" class="hikmah-bg-primary text-white px-4 py-2 rounded-lg font-semibold hover:hikmah-hover transition flex items-center">
+                        <i data-lucide="check" class="w-5 h-5 mr-2"></i> Mark as Complete
+                    </button>`;
+            
+            let subjectColor = 'text-blue-600';
+            if (subject === 'Chemistry') { subjectColor = 'text-orange-600'; }
+            if (subject === 'Math') { subjectColor = 'text-green-600'; }
+            if (subject === 'Biology') { subjectColor = 'text-purple-600'; }
+
+            return `
+                <div class="content-area p-6 lg:p-10">
+                    <button onclick="renderPage('subject', '${subject}')" class="text-gray-600 hover:text-gray-900 transition mb-4 flex items-center">
+                        <i data-lucide="chevron-left" class="w-5 h-5"></i> Back to ${subject} Chapters
+                    </button>
+                    
+                    <div class="border-b pb-4 mb-6">
+                        <h1 class="text-3xl lg:text-4xl font-extrabold text-gray-900">${chapter.title}</h1>
+                        <p class="text-lg font-medium ${subjectColor}">${subject} | Chapter ${chapter.chapter}</p>
+                    </div>
+
+                    <div class="flex justify-between items-center flex-wrap gap-4 mb-8">
+                        <div class="flex space-x-3 overflow-x-auto" id="lesson-tabs">
+                            <button id="tab-Notes" onclick="updateLessonContent('Notes', '${subject}', '${chapterId}')" class="tab-button tab-active">Notes</button>
+                            <button id="tab-Formulas" onclick="updateLessonContent('Formulas', '${subject}', '${chapterId}')" class="tab-button tab-inactive">Key Formulas</button>
+                            <button id="tab-MCQs" onclick="updateLessonContent('MCQs', '${subject}', '${chapterId}')" class="tab-button tab-inactive">Practice MCQs</button>
+                        </div>
+                        ${completionButton}
+                    </div>
+
+                    <div id="lesson-content-display" class="min-h-[500px] bg-white p-4 rounded-xl">
+                        <i data-lucide="loader" class="w-8 h-8 animate-spin text-gray-400 mx-auto block mt-10"></i>
+                    </div>
+                </div>
+            `;
+        }
+        
+        window.updateLessonContent = function(tabName, subject, chapterId) { /* ... function body ... */ 
+            const tabs = ['Notes', 'Formulas', 'MCQs'];
+            tabs.forEach(tab => {
+                const btn = document.getElementById(`tab-${tab}`);
+                if (btn) {
+                    btn.className = (tab === tabName) ? 'tab-button tab-active' : 'tab-button tab-inactive';
+                }
+            });
+
+            const contentDiv = document.getElementById('lesson-content-display');
+            if (!contentDiv) return;
+
+            contentDiv.classList.remove('fade-in-content');
+            void contentDiv.offsetWidth; 
+            contentDiv.classList.add('fade-in-content');
+            
+            let html = '';
+            const chapter = ncertChapters[subject].find(c => c.id === chapterId);
+
+            if (tabName === 'Notes') {
+                html = renderNotesContent(chapter);
+            } else if (tabName === 'Formulas') {
+                html = renderFormulasContent(chapter.id);
+            } else if (tabName === 'MCQs') {
+                html = renderMCQsContent(chapter.title);
+            }
+
+            contentDiv.innerHTML = html;
+            // Rerender MathJax after content load
+            if (window.MathJax) {
+                 MathJax.typesetPromise([contentDiv]);
+            }
+        }
+        
+        function renderNotesContent(chapter) { /* ... function body ... */ 
+            return `
+                <div class="prose max-w-none p-4 lg:p-6">
+                    <p class="text-xl text-gray-700 leading-relaxed italic mb-6">
+                        "Welcome to the comprehensive notes for Chapter ${chapter.chapter}: <strong>${chapter.title}</strong>. This content is structured for quick revision and deep understanding."
+                    </p>
+                    
+                    <h2 id="introduction" class="text-2xl font-bold text-gray-800 mt-8 mb-4 border-b pb-2 flex items-center">
+                        <i data-lucide="chevrons-right" class="w-5 h-5 mr-2 text-red-500"></i> 1. Introduction & Key Concepts
+                    </h2>
+                    <p>This chapter introduces the fundamental principles of ${chapter.title}. For instance, in Physics, this involves understanding the nature of charges and fields. In Chemistry, it focuses on the colligative properties of solutions. The core idea is establishing the foundational vocabulary and framework.</p>
+                    <ul>
+                        <li><span class="font-semibold">Definition:</span> Define the central terms, e.g., Electric Flux, Molality, or Bijective Function.</li>
+                        <li><span class="font-semibold">Historical Context:</span> Briefly mention the pioneering scientists (e.g., Coulomb, Raoult, Mendel).</li>
+                    </ul>
+
+                    <h2 id="detailed-topics" class="text-2xl font-bold text-gray-800 mt-8 mb-4 border-b pb-2 flex items-center">
+                        <i data-lucide="chevrons-right" class="w-5 h-5 mr-2 text-red-500"></i> 2. Detailed Topic Breakdown
+                    </h2>
+                    <p>We will delve into the main derivations and theories that form the bulk of the chapter. Pay close attention to the conditions under which these laws apply.</p>
+                    
+                    <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3 flex items-center">
+                        <i data-lucide="dot" class="w-5 h-5 mr-1 text-orange-500"></i> Sub-topic A (e.g., Gauss's Law / Ideal Solutions)
+                    </h3>
+                    <p>Explain the principle with a simple example or diagram. Memorize the statement and its mathematical form. This is often a critical question in board exams.</p>
+                    
+                    <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3 flex items-center">
+                        <i data-lucide="dot" class="w-5 h-5 mr-1 text-orange-500"></i> Sub-topic B (e.g., Dielectrics / Vapour Pressure)
+                    </h3>
+                    <p>Discuss the physical significance and real-world applications. How does this concept change under different circumstances? (e.g., Polar vs. Non-polar dielectrics, Deviation from Raoult's Law).</p>
+
+                    <h2 id="summary" class="text-2xl font-bold text-gray-800 mt-8 mb-4 border-b pb-2 flex items-center">
+                        <i data-lucide="chevrons-right" class="w-5 h-5 mr-2 text-red-500"></i> 3. Summary and Revision Pointers
+                    </h2>
+                    <p>Before concluding, remember the following critical points for rapid revision:</p>
+                    <ul>
+                        <li><span class="font-semibold">Key Formula Check:</span> Ensure you know the formula for every derived quantity.</li>
+                        <li><span class="font-semibold">Graph Analysis:</span> Understand the significance of all graphs (e.g., E vs r plot, Vapour Pressure vs mole fraction plot).</li>
+                        <li><span class="font-semibold">Exceptions:</span> Note down any exceptions or non-ideal behavior mentioned in the chapter.</li>
+                    </ul>
+                    <div class="mt-8 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-r-md">
+                        <p class="font-bold">Pro Tip:</p>
+                        <p class="text-sm">Connect this chapter's concepts to the previous one. Physics chapters 1 and 2, for example, are highly interlinked.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderFormulasContent(chapterId) { /* ... function body ... */ 
+            const formulas = chapterFormulas[chapterId] || [];
+            if (formulas.length === 0) {
+                return `<div class="p-6 text-center text-gray-500">No specific key formulas are currently available for this chapter.</div>`;
+            }
+
+            const formulaList = formulas.map(item => `
+                <div class="p-4 border border-gray-200 rounded-lg shadow-sm bg-white">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-2">${item.name}</h4>
+                    <div class="text-2xl font-mono text-center bg-gray-50 p-4 rounded-md overflow-x-auto">
+                         ${item.formula}
+                    </div>
+                </div>
+            `).join('');
+
+            return `
+                <div class="p-4 lg:p-6">
+                    <p class="text-gray-600 mb-6">Here are the most important formulas and equations for quick revision. Ensure you memorize these and understand the variables involved.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        ${formulaList}
+                    </div>
+                    <p class="text-sm text-gray-500 mt-6 italic">Note: Formula rendering requires a MathJax script include (not shown here for simplicity but assumed to be present).</p>
+                </div>
+            `;
+        }
+
+        function renderMCQsContent(chapterTitle) { /* ... function body ... */ 
+            return `
+                <div class="p-4 lg:p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Practice Questions for ${chapterTitle}</h3>
+                    <div class="space-y-6">
+                        
+                        <div class="p-4 border border-gray-200 rounded-lg bg-white shadow-sm">
+                            <p class="font-semibold text-gray-700 mb-3">1. Which of the following is NOT a property of an Ideal Solution?</p>
+                            <div class="space-y-2 text-sm text-gray-600">
+                                <label class="flex items-center space-x-2">
+                                    <input type="radio" name="q1" value="A" disabled> <span>(A) $\\Delta H_{\\text{mix}} = 0$</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="radio" name="q1" value="B" disabled> <span>(B) $\\Delta V_{\\text{mix}} = 0$</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="radio" name="q1" value="C" disabled> <span>(C) Obeys Raoult's Law</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="radio" name="q1" value="D" disabled> <span class="font-bold text-red-500">(D) $\\Delta S_{\\text{mix}} = 0$</span>
+                                </label>
+                            </div>
+                            <div class="mt-3 text-sm text-red-500 font-semibold">Answer: D. Mixing leads to increased randomness, so $\\Delta S_{\\text{mix}}$ must be positive.</div>
+                        </div>
+
+                        <div class="p-4 border border-gray-200 rounded-lg bg-white shadow-sm">
+                            <p class="font-semibold text-gray-700 mb-3">2. If the electric field lines are parallel and uniformly spaced, the field is:</p>
+                            <div class="space-y-2 text-sm text-gray-600">
+                                <label class="flex items-center space-x-2">
+                                    <input type="radio" name="q2" value="A" disabled> <span>(A) Radial</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="radio" name="q2" value="B" disabled> <span>(B) Non-uniform</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="radio" name="q2" value="C" disabled> <span class="font-bold text-red-500">(C) Uniform</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="radio" name="q2" value="D" disabled> <span>(D) Null</span>
+                                </label>
+                            </div>
+                            <div class="mt-3 text-sm text-red-500 font-semibold">Answer: C. Uniform electric fields are represented by parallel, equidistant field lines.</div>
+                        </div>
+
+                        <div class="p-4 bg-blue-100 rounded-lg border border-blue-300">
+                            <p class="font-bold text-blue-700">More questions coming soon!</p>
+                            <p class="text-sm text-blue-600">This section is currently under development to include a full quiz engine.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderProfilePage() { /* ... function body ... */ 
+            const totalChapters = calculateTotalChapters();
+            const completedChapters = calculateCompletedChapters();
+            const progressPercentage = totalChapters > 0 ? Math.round((completedChapters / totalChapters) * 100) : 0;
+            const progressColor = progressPercentage === 100 ? 'bg-green-500' : 'hikmah-bg-primary';
+
+            // Calculate subject-wise progress
+            const subjectProgress = Object.keys(ncertChapters).map(subject => {
+                const chapters = ncertChapters[subject];
+                const total = chapters.length;
+                const completed = chapters.filter(c => userProgress[c.id]?.completed === true).length;
+                const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+                let subjectIcon = 'book-open';
+                let iconColor = 'text-blue-600';
+                if (subject === 'Chemistry') { subjectIcon = 'flask-conical'; iconColor = 'text-orange-600'; }
+                if (subject === 'Math') { subjectIcon = 'superscript'; iconColor = 'text-green-600'; }
+                if (subject === 'Biology') { subjectIcon = 'dna'; iconColor = 'text-purple-600'; }
+                const barColor = percent === 100 ? 'bg-green-500' : 'bg-blue-500';
+
+                return `
+                    <div class="p-4 border border-gray-200 rounded-lg shadow-sm bg-white">
+                        <div class="flex items-center mb-2">
+                            <i data-lucide="${subjectIcon}" class="w-5 h-5 mr-2 ${iconColor}"></i>
+                            <h3 class="text-lg font-semibold text-gray-800">${subject}</h3>
+                            <span class="ml-auto text-sm font-bold text-gray-700">${percent}%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div class="${barColor} h-2.5 rounded-full" style="width: ${percent}%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">${completed} of ${total} chapters</p>
+                    </div>
+                `;
+            }).join('');
+
+
+            return `
+                <div class="content-area p-6 lg:p-10 fade-in-content">
+                    <h1 class="text-3xl lg:text-4xl font-extrabold text-gray-900 mb-8 border-b pb-4 flex items-center">
+                        <i data-lucide="user-circle" class="w-8 h-8 mr-3 text-gray-500"></i> My Profile & Progress
+                    </h1>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+                        <div class="lg:col-span-1 p-6 text-center border border-gray-200 rounded-xl bg-gray-50 shadow-md">
+                            <i data-lucide="user" class="w-16 h-16 text-gray-500 mx-auto mb-3"></i>
+                            <h2 class="text-2xl font-bold text-gray-900">Abhinash</h2>
+                            <p class="text-gray-500 mb-4">Class 12 Student (Mock User)</p>
+                            <div class="mt-4">
+                                <button class="bg-gray-700 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-800 transition">
+                                    <i data-lucide="log-out" class="w-4 h-4 mr-1 inline-block"></i> Logout (Mock)
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-2 p-6 border border-gray-200 rounded-xl bg-white shadow-md">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                                <i data-lucide="activity" class="w-6 h-6 mr-2 text-green-600"></i> Overall Academic Performance
+                            </h2>
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-lg font-semibold text-gray-600">Total Chapters Completed</span>
+                                <span class="text-3xl font-extrabold ${progressColor.replace('bg-', 'text-')}">${completedChapters} / ${totalChapters}</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-4">
+                                <div class="${progressColor} h-4 rounded-full transition-all duration-700" style="width: ${progressPercentage}%"></div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2 text-right">Progress: <span class="font-bold">${progressPercentage}%</span></p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-5 flex items-center">
+                            <i data-lucide="graduation-cap" class="w-6 h-6 mr-2 text-orange-600"></i> Subject Breakdown
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            ${subjectProgress}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderNotificationPage() { /* ... function body ... */ 
+            const notifications = generateRealTimeNotifications();
+            
+            if (notifications.length === 0) {
+                return `
+                    <div class="content-area p-6 lg:p-10 text-center fade-in-content">
+                         <i data-lucide="bell-off" class="w-16 h-16 text-gray-300 mx-auto mb-4"></i>
+                         <h1 class="text-2xl font-bold text-gray-800 mb-2">No New Notifications</h1>
+                         <p class="text-gray-500">You are all caught up!</p>
+                    </div>
+                `;
+            }
+
+            const notificationHtml = notifications.map(n => {
+                const isRead = n.read;
+                const bgColor = isRead ? 'bg-white' : 'bg-blue-50';
+                const borderColor = isRead ? 'border-gray-200' : 'border-blue-300';
+                const badgeColor = n.type === 'Progress' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700';
+                const icon = n.type === 'Progress' ? 'trophy' : 'info';
+                
+                const date = new Date(n.date).toLocaleString('en-US', {
+                    year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+
+                return `
+                    <div class="${bgColor} border ${borderColor} rounded-xl p-5 shadow-sm transition transform hover:shadow-md cursor-pointer" onclick="${n.action}">
+                        <div class="flex items-start">
+                            <i data-lucide="${icon}" class="w-5 h-5 mt-1 mr-3 text-blue-500"></i>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start mb-1">
+                                    <h3 class="text-lg font-bold text-gray-900">${n.title}</h3>
+                                    <span class="text-xs font-medium ${badgeColor} px-2 py-0.5 rounded-full">${n.type}</span>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-2">${n.message.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
+                                <div class="flex justify-between items-center text-xs text-gray-500">
+                                    <span>${date}</span>
+                                    ${!isRead ? '<span class="text-blue-600 font-semibold">NEW</span>' : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+
+            return `
+                <div class="content-area p-6 lg:p-10 fade-in-content">
+                    <h1 class="text-3xl lg:text-4xl font-extrabold text-gray-900 mb-8 border-b pb-4 flex items-center">
+                        <i data-lucide="bell" class="w-8 h-8 mr-3 text-orange-500"></i> Notifications
+                    </h1>
+
+                    <div class="space-y-4">
+                        ${notificationHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+
+        function renderErrorPage(title, message) { /* ... function body ... */ 
+            return `
+                <div class="content-area p-10 text-center">
+                    <i data-lucide="alert-triangle" class="w-16 h-16 text-red-500 mx-auto mb-4"></i>
+                    <h1 class="text-3xl font-bold text-red-600 mb-2">${title}</h1>
+                    <p class="text-gray-600 mb-6">${message}</p>
+                    <button onclick="renderPage('dashboard')" class="hikmah-bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:hikmah-hover transition">
+                        Go to Dashboard
+                    </button>
+                </div>
+            `;
+        }
+
+        function renderCourseCard(course) { /* ... function body ... */ 
+            const accessClass = "hikmah-bg-primary";
+            const hoverClass = "hover:hikmah-hover";
+            
+            let subjectIcon = 'book-open';
+            let subjectColor = 'text-blue-600';
+            if (course.subject === 'Chemistry') { subjectIcon = 'flask-conical'; subjectColor = 'text-orange-600'; }
+            if (course.subject === 'Math') { subjectIcon = 'superscript'; subjectColor = 'text-green-600'; }
+            if (course.subject === 'Biology') { subjectIcon = 'dna'; subjectColor = 'text-purple-600'; }
+
+            return `
+                <div class="bg-white border border-gray-200 rounded-xl shadow-lg chapter-card welcome-card-animate" style="animation-delay: 1.0s;">
+                    <img class="rounded-t-xl h-40 w-full object-cover" src="${course.image}" alt="${course.title}">
+                    <div class="p-5 space-y-4">
+                        <h3 class="text-xl font-bold text-gray-900 line-clamp-2">${course.title}</h3>
+                        <p class="text-sm text-gray-600 line-clamp-3">${course.description}</p>
+                        
+                        <div class="flex justify-between text-sm border-t border-b py-3 text-gray-500">
+                            <div class="text-center">
+                                <i data-lucide="book" class="w-4 h-4 mx-auto mb-1 ${subjectColor}"></i>
+                                <span class="block font-semibold text-gray-800">${course.subject}</span>
+                                <span class="block">Subject</span>
+                            </div>
+                            <div class="text-center">
+                                <i data-lucide="clock" class="w-4 h-4 mx-auto mb-1 text-gray-400"></i>
+                                <span class="block font-semibold text-gray-800">TBD</span>
+                                <span class="block">Lectures</span>
+                            </div>
+                            <div class="text-center">
+                                <i data-lucide="users" class="w-4 h-4 mx-auto mb-1 text-green-500"></i>
+                                <span class="block font-semibold text-gray-800">Enroll Early</span>
+                                <span class="block">Status</span>
+                            </div>
+                        </div>
+
+                        <button class="w-full flex items-center justify-center ${accessClass} text-white py-2.5 rounded-lg font-semibold shadow-xl ${hoverClass} transition pointer-events-none">
+                            <i data-lucide="calendar-search" class="w-5 h-5 mr-2"></i>
+                            Content Release Soon
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+
+        window.onload = function() {
+            // FIX: Call the local app logic directly to ensure the dashboard renders.
+            initializeAppLogic();
+        };
+    </script>
+</body>
+</html>
