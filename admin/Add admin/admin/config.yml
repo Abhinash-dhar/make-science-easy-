@@ -1,0 +1,17 @@
+backend:
+  name: github
+  repo: Abhinash-Dhar/make-science-easy
+  branch: main
+
+media_folder: "images/uploads"   # where uploaded images go
+public_folder: "/images/uploads"
+
+collections:
+  - name: "notes"
+    label: "Notes"
+    folder: "content/notes"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Body", name: "body", widget: "markdown" }
